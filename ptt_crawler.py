@@ -55,47 +55,48 @@ def get_articles(dom, date_list):
                     soup = BeautifulSoup(contents, "html5lib")
 
                     article_metas=soup.find_all("div", "article-metaline")
-                    for article_meta in article_metas:
-                        all_spans=[span for span in article_meta.children]
-                        if all_spans[0].text == "作者": # 作者ID 及 名稱
-                            author=all_spans[1].text
-                            authorId=author.split(" ", 1)[0].strip()
-                            authorName=author.split(" ", 1)[1].strip()
-                        elif all_spans[0].text == "標題": # 標題
-                            title=all_spans[1].text.strip()
-                        elif all_spans[0].text == "時間": # 發文時間
-                            publishedTime=all_spans[1].text.strip()
+                    if article_metas: # 若有抓到 article_metas 即表示有抓到文章訊息(作者,標題,時間), 代表文章沒有被刪除
+                        for article_meta in article_metas:
+                            all_spans=[span for span in article_meta.children]
+                            if all_spans[0].text == "作者": # 作者ID 及 名稱
+                                author=all_spans[1].text
+                                authorId=author.split(" ", 1)[0].strip()
+                                authorName=author.split(" ", 1)[1].strip()
+                            elif all_spans[0].text == "標題": # 標題
+                                title=all_spans[1].text.strip()
+                            elif all_spans[0].text == "時間": # 發文時間
+                                publishedTime=all_spans[1].text.strip()
 
-                    content=soup.text.strip()
-                    target_split="※ 發信站: 批踢踢實業坊(ptt.cc),"
-                    content=content.split(publishedTime)[1].strip() # 擷取 發文時間 後的字串
-                    content=content.split(target_split)[0].strip() # 擷取 ※ 發信站: 批踢踢實業坊(ptt.cc), 前的字串
-                    content=content.replace('--', '').strip() # 去掉文末 --
+                        content=soup.text.strip()
+                        target_split="※ 發信站: 批踢踢實業坊(ptt.cc),"
+                        content=content.split(publishedTime)[1].strip() # 擷取 發文時間 後的字串
+                        content=content.split(target_split)[0].strip() # 擷取 ※ 發信站: 批踢踢實業坊(ptt.cc), 前的字串
+                        content=content.replace('--', '').strip() # 去掉文末 --
 
-                    createdTime=datetime.now() # 建立時間
-                    updateTime=datetime.now() # 更新時間
+                        createdTime=datetime.now() # 建立時間
+                        updateTime=datetime.now() # 更新時間
 
-                    all_comments=soup.find_all("div", "push")
-                    for comment in all_comments:
-                        all_spans=[span for span in comment.children]
-                        push_tag=all_spans[0].text.strip()
-                        commentId=all_spans[1].text.strip()
-                        commentContent=all_spans[2].text.strip()
-                        commentTime=all_spans[3].text.strip()
+                        all_comments=soup.find_all("div", "push")
+                        for comment in all_comments:
+                            all_spans=[span for span in comment.children]
+                            push_tag=all_spans[0].text.strip()
+                            commentId=all_spans[1].text.strip()
+                            commentContent=all_spans[2].text.strip()
+                            commentTime=all_spans[3].text.strip()
 
-                        articles.append([authorId, 
-                                         authorName, 
-                                         title, 
-                                         publishedTime, 
-                                         content, 
-                                         PTT_URL + href, 
-                                         createdTime,
-                                         updateTime,
-                                         commentId,
-                                         commentContent,
-                                         commentTime,
-                                         push_tag,
-                                         push_count])
+                            articles.append([authorId, 
+                                            authorName, 
+                                            title, 
+                                            publishedTime, 
+                                            content, 
+                                            PTT_URL + href, 
+                                            createdTime,
+                                            updateTime,
+                                            commentId,
+                                            commentContent,
+                                            commentTime,
+                                            push_tag,
+                                            push_count])
 
     return articles, prev_url
 
