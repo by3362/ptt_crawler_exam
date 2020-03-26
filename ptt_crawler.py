@@ -67,6 +67,10 @@ def get_articles(dom, date_list):
                             publishedTime=all_spans[1].text.strip()
 
                     content=soup.text.strip()
+                    target_split="※ 發信站: 批踢踢實業坊(ptt.cc),"
+                    content=content.split(publishedTime)[1].strip() # 擷取 發文時間 後的字串
+                    content=content.split(target_split)[0].strip() # 擷取 ※ 發信站: 批踢踢實業坊(ptt.cc), 前的字串
+                    content=content.replace('--', '').strip() # 去掉文末 --
 
                     createdTime=datetime.now() # 建立時間
                     updateTime=datetime.now() # 更新時間
@@ -141,5 +145,3 @@ if __name__ == "__main__":
                                                "push_count"])
 
         df.to_csv(datetime.now().strftime("%Y%m%d") + "_" + Board + ".csv", encoding='utf_8_sig')
-
-        
